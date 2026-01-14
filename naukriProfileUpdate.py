@@ -22,6 +22,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 NAUKRI_PROFILE_URL = "https://www.naukri.com/mnjuser/profile"
 NAUKRI_PROFILE_DIR = os.path.join(os.path.dirname(__file__), "naukri_profile1")
@@ -46,7 +51,9 @@ def get_driver(binary_path: str | None = None) -> webdriver.Chrome:
         options.binary_location = binary_path
         log(f"Using Chrome binary at {binary_path}")
 
-    driver = webdriver.Chrome(options=options)
+    # ✅ Correct usage with Service
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
     driver.set_page_load_timeout(60)
     return driver
 
