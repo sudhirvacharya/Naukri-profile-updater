@@ -30,6 +30,35 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 NAUKRI_PROFILE_URL = "https://www.naukri.com/mnjuser/profile"
 NAUKRI_PROFILE_DIR = os.path.join(os.path.dirname(__file__), "naukri_profile1")
+LOG_FILE = os.path.join(os.path.dirname(__file__), "log.txt")
+
+def log_execution() -> None:
+    """Append execution count and timestamp (dd-mm-yy) to log.txt."""
+    count = 0
+    if os.path.exists(LOG_FILE):
+        try:
+            with open(LOG_FILE, "r") as f:
+                lines = f.readlines()
+                if lines:
+                    last_line = lines[-1].strip()
+                    # Expect format: "Run #N at dd-mm-yy HH:MM:SS"
+                    if last_line.startswith("Run #"):
+                        try:
+                            count = int(last_line.split()[1][1:])  # extract N
+                        except Exception:
+                            count = 0
+        except Exception:
+            pass
+
+    count += 1
+    # Format: dd-mm-yy HH:MM:SS
+    timestamp = time.strftime("%d-%m-%y %H:%M:%S")
+    entry = f"Run #{count} at {timestamp}\n"
+
+    with open(LOG_FILE, "a") as f:
+        f.write(entry)
+
+    print(entry.strip())
 
 
 def log(msg: str) -> None:
@@ -246,6 +275,7 @@ def toggle_trailing_period(text: str) -> str:
 
 
 def run(email: str | None, password: str | None, binary: str | None) -> int:
+    log_execution() 
     driver = get_driver(binary)
     try:
         if not is_logged_in(driver):
